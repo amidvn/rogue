@@ -1,12 +1,50 @@
 import curses
 
 
+HEADER_STRINGS = [
+    "          _____                   _______                   _____                    _____                    _____          ",
+    "         /\\    \\                 /::\\    \\                 /\\    \\                  /\\    \\                  /\\    \\         ",
+    "        /::\\    \\               /::::\\    \\               /::\\    \\                /::\\____\\                /::\\    \\        ",
+    "       /::::\\    \\             /::::::\\    \\             /::::\\    \\              /:::/    /               /::::\\    \\       ",
+    "      /::::::\\    \\           /::::::::\\    \\           /::::::\\    \\            /:::/    /               /::::::\\    \\      ",
+    "     /:::/\\:::\\    \\         /:::/~~\\:::\\    \\         /:::/\\:::\\    \\          /:::/    /               /:::/\\:::\\    \\     ",
+    "    /:::/__\\:::\\    \\       /:::/    \\:::\\    \\       /:::/  \\:::\\    \\        /:::/    /               /:::/__\\:::\\    \\    ",
+    "   /::::\\   \\:::\\    \\     /:::/    / \\:::\\    \\     /:::/    \\:::\\    \\      /:::/    /               /::::\\   \\:::\\    \\   ",
+    "  /::::::\\   \\:::\\    \\   /:::/____/   \\:::\\____\\   /:::/    / \\:::\\    \\    /:::/    /      _____    /::::::\\   \\:::\\    \\  ",
+    " /:::/\\:::\\   \\:::\\____\\ |:::|    |     |:::|    | /:::/    /   \\:::\\ ___\\  /:::/____/      /\\    \\  /:::/\\:::\\   \\:::\\    \\ ",
+    "/:::/  \\:::\\   \\:::|    ||:::|____|     |:::|    |/:::/____/  ___\\:::|    ||:::|    /      /::\\____\\/:::/__\\:::\\   \\:::\\____\\",
+    "\\::/   |::::\\  /:::|____| \\:::\\    \\   /:::/    / \\:::\\    \\ /\\  /:::|____||:::|____\\     /:::/    /\\:::\\   \\:::\\   \\::/    /",
+    " \\/____|:::::\\/:::/    /   \\:::\\    \\ /:::/    /   \\:::\\    /::\\ \\::/    /  \\:::\\    \\   /:::/    /  \\:::\\   \\:::\\   \\/____/ ",
+    "       |:::::::::/    /     \\:::\\    /:::/    /     \\:::\\   \\:::\\ \\/____/    \\:::\\    \\ /:::/    /    \\:::\\   \\:::\\    \\     ",
+    "       |::|\\::::/    /       \\:::\\__/:::/    /       \\:::\\   \\:::\\____\\       \\:::\\    /:::/    /      \\:::\\   \\:::\\____\\    ",
+    "       |::| \\::/____/         \\::::::::/    /         \\:::\\  /:::/    /        \\:::\\__/:::/    /        \\:::\\   \\::/    /    ",
+    "       |::|  ~|                \\::::::/    /           \\:::\\/:::/    /          \\::::::::/    /          \\:::\\   \\/____/     ",
+    "       |::|   |                 \\::::/    /             \\::::::/    /            \\::::::/    /            \\:::\\    \\         ",
+    "       \\::|   |                  \\::/____/               \\::::/    /              \\::::/    /              \\:::\\____\\        ",
+    "        \\:|   |                   ~~                      \\::/____/                \\::/____/                \\::/    /        ",
+    "         \\|___|                                                                     ~~                       \\/____/         ",
+]
+
+MENU_STRINGS = [
+    "           GAME  MENU           ",
+    "+------------------------------+",
+    "|                              |",
+    "|          NEW   GAME          |",
+    "|          LOAD  GAME          |",
+    "|          SCOREBOARD          |",
+    "|          EXIT  GAME          |",
+    "|                              |",
+    "+------------------------------+",
+]
+
+
+
 class MenuScreen:
     def __init__(self, stdscr, screen_manager):
         self.stdscr = stdscr
         self.screen_manager = screen_manager
         self.header = "ROGUE"
-        self.bottom = "Made by @amidvn"
+        self.bottom = "Made by @amidvn, 2026"
         self.menu_options = [
             ("Новая игра", self.action_new_game),
             ("Загрузить игру", self.action_load_game),
@@ -16,17 +54,23 @@ class MenuScreen:
         self.current_row = 0
 
     def render(self):
-        self.stdscr.addstr("\n    " + self.header + "\n\n", curses.color_pair(1) | curses.A_BOLD)
+        for s in HEADER_STRINGS:
+            self.stdscr.addstr(s + "\n", curses.color_pair(1) | curses.A_BOLD)
 
-        for idx, (label, _) in enumerate(self.menu_options):
-            x = 2
-            y = idx + 3
+        x = 47
+        y = len(HEADER_STRINGS) + 3
+        for s in MENU_STRINGS[:3]:
+            self.stdscr.addstr(y, x, s, curses.color_pair(1))
+            y += 1
+
+        for idx, s in enumerate(MENU_STRINGS[3:]):
             if idx == self.current_row:
-                self.stdscr.addstr(y, x, f"> {label}", curses.color_pair(2))
+                self.stdscr.addstr(y, x, s, curses.color_pair(2))
             else:
-                self.stdscr.addstr(y, x, f"  {label}", curses.color_pair(1))
+                self.stdscr.addstr(y, x, s, curses.color_pair(1))
+            y += 1
 
-        self.stdscr.addstr("\n\n\n    " + self.bottom + "\n\n", curses.color_pair(1) | curses.A_BOLD)
+        self.stdscr.addstr("\n\n\n\n    " + self.bottom + "\n\n", curses.color_pair(1) | curses.A_BOLD)
 
     def handle_input(self, key: int) -> bool:
         if key == curses.KEY_UP:

@@ -24,9 +24,9 @@ def main(stdscr):
                 screen_manager.current_screen = "level"
             elif screen_manager.current_screen == "results":
                 screen_manager.screens["results"].data = [
-                    {'date': '2026-07-26 15:40', 'levels': 5, 'treasures': 12},
-                    {'date': '2026-07-26 14:00', 'levels': 6, 'treasures': 14},
-                    {'date': '2026-07-26 12:00', 'levels': 3, 'treasures': 7}
+                    {'date': '2026-07-26 15:40', 'levels': 5, 'treasures': 12, 'enemies': 26, 'food': 19, 'elixirs': 7, 'scrolls': 6, 'attacks': 52, 'hits': 36, 'tiles': 47},
+                    {'date': '2026-07-26 14:00', 'levels': 6, 'treasures': 14, 'enemies': 26, 'food': 19, 'elixirs': 7, 'scrolls': 6, 'attacks': 52, 'hits': 36, 'tiles': 47},
+                    {'date': '2026-07-26 12:00', 'levels': 3, 'treasures': 7, 'enemies': 26, 'food': 19, 'elixirs': 7, 'scrolls': 6, 'attacks': 52, 'hits': 36, 'tiles': 47}
                 ]
 
             screen_manager.switch_to(screen_manager.current_screen, {})
