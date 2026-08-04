@@ -1,6 +1,6 @@
 import curses
 
-from domain import GameSession
+from domain import GameSession, Level
 from presentation import ScreenManager
 
 
@@ -19,6 +19,8 @@ def main(stdscr):
         if screen_manager.current_screen != current_screen:
             if screen_manager.current_screen == "level":
                 screen_manager.screens["level"].game_session = GameSession()
+                screen_manager.screens["level"].level = Level()
+                screen_manager.screens["level"].level.generate_next_level()
             elif screen_manager.current_screen == "load_game":  # TODO - load game from json
                 screen_manager.screens["level"].game_session = GameSession()
                 screen_manager.current_screen = "level"
