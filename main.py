@@ -6,8 +6,8 @@ from presentation import ScreenManager
 
 def main(stdscr):
     height, width = stdscr.getmaxyx()
-    if height < 31 or width < 150:
-        stdscr.addstr(0, 0, "Недостаточно размера на терминале\nНажмите любую клавишу для выхода")
+    if height < 40 or width < 150:
+        stdscr.addstr(0, 0, f"Недостаточно размера на терминале\nСейчас экран {width}x{height}, необходимо {150}x{40}\nНажмите любую клавишу для выхода")
         key = stdscr.getch()
         return
 
