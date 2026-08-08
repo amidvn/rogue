@@ -6,8 +6,8 @@ from presentation import ScreenManager
 
 def main(stdscr):
     height, width = stdscr.getmaxyx()
-    if height < 40 or width < 150:
-        stdscr.addstr(0, 0, f"Недостаточно размера на терминале\nСейчас экран {width}x{height}, необходимо {150}x{40}\nНажмите любую клавишу для выхода")
+    if height < 40 or width < 130:
+        stdscr.addstr(0, 0, f"Недостаточно размера на терминале\nСейчас экран {width}x{height}, необходимо {130}x{40}\nНажмите любую клавишу для выхода")
         key = stdscr.getch()
         return
 
@@ -18,12 +18,17 @@ def main(stdscr):
     while True:
         if screen_manager.current_screen != current_screen:
             if screen_manager.current_screen == "level":
-                screen_manager.screens["level"].game_session = GameSession()
-                screen_manager.screens["level"].level = Level()
-                screen_manager.screens["level"].level.generate_next_level()
+                gs = GameSession()
+                screen_manager.screens["level"].game_session = gs
+                new_level = Level()
+                screen_manager.screens["level"].level = new_level
+                new_level.generate_next_level()
+                gs.player.place_in_center_of_room(new_level.rooms[0])
             elif screen_manager.current_screen == "load_game":  # TODO - load game from json
                 screen_manager.screens["level"].game_session = GameSession()
                 screen_manager.current_screen = "level"
+                screen_manager.screens["level"].level = Level()
+                screen_manager.screens["level"].level.generate_next_level()
             elif screen_manager.current_screen == "results":
                 screen_manager.screens["results"].data = [
                     {'date': '2026-07-26 15:40', 'levels': 5, 'treasures': 12, 'enemies': 26, 'food': 19, 'elixirs': 7, 'scrolls': 6, 'attacks': 52, 'hits': 36, 'tiles': 47},

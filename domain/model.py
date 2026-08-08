@@ -1,10 +1,6 @@
 import random
 
 
-class GameSession():
-    pass
-
-
 ROOMS_IN_WIDTH = 3
 ROOMS_IN_HEIGHT = 3
 NUM_ROOMS = ROOMS_IN_WIDTH * ROOMS_IN_HEIGHT
@@ -15,6 +11,14 @@ MAX_ROOM_WIDTH = REGION_WIDTH - 3
 MIN_ROOM_HEIGHT = 5
 MAX_ROOM_HEIGHT = REGION_HEIGHT - 3
 
+
+class GameSession():
+    def __init__(self):
+        self.player = Character()
+        self.current_level = 0
+        self.backpack = list()
+
+
 class Level():
     def __init__(self):
         self.level_num = 0  # порядковый номер уровня
@@ -22,14 +26,14 @@ class Level():
         self.rooms = []  # информация о комнатах
         for ind in range(NUM_ROOMS):
             self.rooms.append(Room())
-        self.passages = []  # информация о коридорах
+        self.corridors = []  # информация о коридорах
         self.end_of_level = []  # координаты выхода из уровня
 
     def generate_next_level(self):
         self.clear_data()
         self.level_num += 1
         self.generate_rooms()
-        self.generate_passages()
+        self.generate_corridors()
         player_room = self.generate_player()
         self.generate_monsters()
         self.generate_consumables()
@@ -57,10 +61,10 @@ class Level():
             self.rooms[ind].x_coord = random.randint(left_range_coord, right_range_coord)
             self.rooms[ind].y_coord = random.randint(up_range_coord, botton_range_coord)
 
-    def generate_passages(self):
+    def generate_corridors(self):
         edges = self.generate_shuffled_edges_for_rooms()
         sets = [{i} for i in range(NUM_ROOMS)]
-        passages = list()
+        corridors = list()
         for (i, j) in edges:
             for ind, s in enumerate(sets):
                 if i in s:
@@ -69,11 +73,11 @@ class Level():
                     ind_j = ind
             if ind_i == ind_j:
                 continue
-            passages.append((i, j))
+            corridors.append((i, j))
             sets[ind_i].update(sets[ind_j])
             sets.pop(ind_j)
 
-        for i, j in passages:
+        for i, j in corridors:
             room_1 = self.rooms[i]
             room_2 = self.rooms[j]
             if (j - i) == 1:  # horizontal passage
@@ -82,24 +86,24 @@ class Level():
                 second_x = room_2.x_coord
                 second_y = random.randint(room_2.y_coord + 1, room_2.y_coord + room_2.height_room - 2)
                 if first_y == second_y:
-                    self.passages.append(Corridor(first_x, first_y, second_x, second_y))
+                    self.corridors.append(Corridor(first_x, first_y, second_x, second_y))
                 else:
                     vertical = random.randint(first_x + 1, second_x - 1)
-                    self.passages.append(Corridor(first_x, first_y, vertical, first_y))
-                    self.passages.append(Corridor(vertical, min(first_y, second_y), vertical, max(first_y, second_y)))
-                    self.passages.append(Corridor(vertical, second_y, second_x, second_y))
+                    self.corridors.append(Corridor(first_x, first_y, vertical, first_y))
+                    self.corridors.append(Corridor(vertical, min(first_y, second_y), vertical, max(first_y, second_y)))
+                    self.corridors.append(Corridor(vertical, second_y, second_x, second_y))
             else:
                 first_x = random.randint(room_1.x_coord + 1, room_1.x_coord + room_1.width_room - 2)
                 first_y = room_1.y_coord + room_1.height_room - 1
                 second_x = random.randint(room_2.x_coord + 1, room_2.x_coord + room_2.width_room - 2)
                 second_y = room_2.y_coord
                 if first_x == second_x:
-                    self.passages.append(Corridor(first_x, first_y, second_x, second_y))
+                    self.corridors.append(Corridor(first_x, first_y, second_x, second_y))
                 else:
                     horizont = random.randint(first_y + 1, second_y - 1)
-                    self.passages.append(Corridor(first_x, first_y, first_x, horizont))
-                    self.passages.append(Corridor(min(first_x, second_x), horizont, max(first_x, second_x), horizont))
-                    self.passages.append(Corridor(second_x, horizont, second_x, second_y))
+                    self.corridors.append(Corridor(first_x, first_y, first_x, horizont))
+                    self.corridors.append(Corridor(min(first_x, second_x), horizont, max(first_x, second_x), horizont))
+                    self.corridors.append(Corridor(second_x, horizont, second_x, second_y))
 
     def generate_shuffled_edges_for_rooms(self) -> list:
         edges = list()
@@ -160,8 +164,34 @@ class Character():
         self.cur_health = 100
         self.dexterity = 10
         self.strength = 100
-        self.cur_weapon = None
+        self.current_weapon = None
+        self.pos_x = 0
+        self.pos_y = 0
 
+    def place_in_center_of_room(self, room):
+        self.pos_x = room.x_coord + room.width_room // 2
+        self.pos_y = room.y_coord + room.height_room // 2
+
+    def move(self, level, step_x, step_y):
+        new_pos_x = self.pos_x + step_x
+        new_pos_y = self.pos_y + step_y
+        outside_border = True
+        for room in level.rooms:
+            if new_pos_x > room.x_coord and new_pos_x < room.x_coord + room.width_room - 1 and\
+            new_pos_y > room.y_coord and new_pos_y < room.y_coord + room.height_room - 1:
+                outside_border = False
+                break
+        for corridor in level.corridors:
+            if new_pos_x >= corridor.start_x and new_pos_x <= corridor.end_x and new_pos_y >= corridor.start_y and new_pos_y <= corridor.end_y:
+                outside_border = False
+                break
+
+        if not outside_border:
+            self.pos_x += step_x
+            self.pos_y += step_y
+
+    def check_outside_border(self, new_pos_x, new_pos_y):
+        pass
 
 class Backpack():
     pass
