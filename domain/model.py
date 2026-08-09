@@ -27,7 +27,8 @@ class Level():
         for ind in range(NUM_ROOMS):
             self.rooms.append(Room())
         self.corridors = []  # информация о коридорах
-        self.end_of_level = []  # координаты выхода из уровня
+        self.end_of_level_x = 0 # координаты выхода из уровня
+        self.end_of_level_y = 0
 
     def generate_next_level(self):
         self.clear_data()
@@ -130,8 +131,14 @@ class Level():
         pass
 
     def generate_exit(self):
-        pass
-
+        exit_room = random.randint(1, len(self.rooms) - 1)
+        upper_left_x = self.rooms[exit_room].x_coord + 2
+        upper_left_y = self.rooms[exit_room].y_coord + 2
+        bottom_right_x = upper_left_x + self.rooms[exit_room].width_room - 5
+        bottom_right_y = upper_left_y + self.rooms[exit_room].height_room - 5
+        print(upper_left_x, bottom_right_x, upper_left_y, bottom_right_y)
+        self.end_of_level_x= random.randint(upper_left_x, bottom_right_x)
+        self.end_of_level_y = random.randint(upper_left_y, bottom_right_y)
 
 
 class Room():

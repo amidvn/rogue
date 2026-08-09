@@ -1,5 +1,7 @@
 import curses
 
+from domain import Level
+
 
 class LevelScreen:
     def __init__(self, stdscr, screen_manager):
@@ -34,6 +36,8 @@ class LevelScreen:
         player_pos_y = self.game_session.player.pos_y
         self.stdscr.addstr(player_pos_y, player_pos_x, "@", curses.color_pair(1))
 
+        self.stdscr.addstr(self.level.end_of_level_y, self.level.end_of_level_x, "E", curses.color_pair(1))
+
     def handle_input(self, key: int) -> bool:
         if key == ord('q') or key == ord('Q'):
             return False
@@ -45,4 +49,8 @@ class LevelScreen:
             self.game_session.player.move(self.level, -1, 0)
         elif key == ord('d') or key == ord('D'):
             self.game_session.player.move(self.level, 1, 0)
+        if self.game_session.player.pos_x == self.level.end_of_level_x and self.game_session.player.pos_y == self.level.end_of_level_y:
+            self.level = Level()
+            self.level.generate_next_level()
+            self.game_session.player.place_in_center_of_room(self.level.rooms[0])
         return True
